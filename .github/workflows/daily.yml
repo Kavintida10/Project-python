@@ -4,7 +4,7 @@ on:
   schedule:
     # 00:00 UTC ตรงกับ 07:00 น. ของเวลาประเทศไทย
     - cron: '0 0 * * *'
-  # เปิดให้มีปุ่มกดทดสอบรันเองได้ทันที
+  # เพิ่มปุ่มกดทดสอบรันด้วยตัวเองใน Actions
   workflow_dispatch:
 
 jobs:
@@ -28,5 +28,6 @@ jobs:
           LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
           USER_ID: ${{ secrets.USER_ID }}
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           python main.py
