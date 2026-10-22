@@ -3,9 +3,9 @@ import os
 import requests
 
 # 1. ดึงค่า Secrets จาก GitHub Actions
-LINE_ACCESS_TOKEN = os.getenv("Vg6lnK+q5FteaOna1xpqQA9i9uEb/HXRj3tY3lWKRGb/TunJEzpBXYahlWe+FvI4dJtUQHqXTl5VPiCgp9sOMnwFSOsd0pSsl+TgE9dHXLAfEvroTPT/xe0w8D5ojFpCLeX2LK1s2SRH5bz0r23fYQdB04t89/1O/w1cDnyilFU=")
-USER_ID = os.getenv("Ub9e1bb74f53b02db8fdd6590f8b8c26d")
-WEATHER_API_KEY = os.getenv("f7fb6371cdfa8941b31a9920acb6569e")
+LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
+USER_ID = os.getenv("USER_ID")
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 CITY_NAME = "Pathum Thani"
 
 WEEKLY_SCHEDULE = {
