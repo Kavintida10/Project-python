@@ -65,7 +65,6 @@ def get_weather_data():
 def build_flex_message(date_str, today_index, weather):
     tasks = WEEKLY_SCHEDULE.get(today_index, [])
     
-    # สร้างบล็อกตารางเรียนแต่ละวิชา
     schedule_components = []
     for item in tasks:
         schedule_components.append({
@@ -93,7 +92,6 @@ def build_flex_message(date_str, today_index, weather):
             ]
         })
 
-    # โครงสร้าง Flex Message แบบ Bubble
     flex_payload = {
         "type": "flex",
         "altText": "☀️ รายงานสรุป Morning Briefing ประจำวัน",
@@ -112,8 +110,7 @@ def build_flex_message(date_str, today_index, weather):
                         "text": "MORNING BRIEFING",
                         "color": "#ffffff",
                         "weight": "bold",
-                        "size": "xs",
-                        "letterSpacing": "2px"
+                        "size": "xs"
                     },
                     {
                         "type": "text",
@@ -130,7 +127,6 @@ def build_flex_message(date_str, today_index, weather):
                 "layout": "vertical",
                 "paddingAll": "20px",
                 "contents": [
-                    # ส่วนสภาพอากาศ
                     {
                         "type": "box",
                         "layout": "horizontal",
@@ -161,7 +157,6 @@ def build_flex_message(date_str, today_index, weather):
                         ]
                     },
                     {"type": "separator", "margin": "xl", "color": "#f0f0f0"},
-                    # ส่วนหัวตารางเรียน
                     {
                         "type": "text",
                         "text": "📚 ตารางเรียนและกิจกรรมวันนี้",
@@ -211,5 +206,4 @@ def send_line_flex(payload):
 if __name__ == "__main__":
     date_str, today_index = get_current_date()
     weather = get_weather_data()
-    flex_card = build_flex_message(date_str, today_index, weather)
-    send_line_flex(flex_card)
+    flex_card = build_flex_message(date_
