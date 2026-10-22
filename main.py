@@ -2,7 +2,7 @@ import datetime
 import os
 import requests
 
-# ดึงค่า Secrets จาก Environment Variables ของ GitHub
+# 1. ดึงค่า Secrets จาก GitHub Actions
 LINE_ACCESS_TOKEN = os.getenv("Vg6lnK+q5FteaOna1xpqQA9i9uEb/HXRj3tY3lWKRGb/TunJEzpBXYahlWe+FvI4dJtUQHqXTl5VPiCgp9sOMnwFSOsd0pSsl+TgE9dHXLAfEvroTPT/xe0w8D5ojFpCLeX2LK1s2SRH5bz0r23fYQdB04t89/1O/w1cDnyilFU=")
 USER_ID = os.getenv("Ub9e1bb74f53b02db8fdd6590f8b8c26d")
 WEATHER_API_KEY = os.getenv("f7fb6371cdfa8941b31a9920acb6569e")
@@ -19,7 +19,7 @@ WEEKLY_SCHEDULE = {
 }
 
 def get_current_date():
-    # เวลาในเซิร์ฟเวอร์ GitHub เป็น UTC จึงบวก 7 ชั่วโมงให้ตรงกับเวลาไทย
+    # เวลาเซิร์ฟเวอร์ GitHub เป็น UTC จึงบวก 7 ชั่วโมงให้เป็นเวลาไทย
     now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
     days_th = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"]
     months_th = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
@@ -61,10 +61,7 @@ def send_line_briefing(message_text):
         "messages": [{"type": "text", "text": message_text}]
     }
     res = requests.post(url, headers=headers, json=payload)
-    if res.status_code == 200:
-        print("✅ ส่งข้อความ Morning Briefing เข้า LINE สำเร็จ!")
-    else:
-        print(f"❌ เกิดข้อผิดพลาด: {res.status_code}, {res.text}")
+    print(f"ผลการส่ง LINE: {res.status_code}, {res.text}")
 
 if __name__ == "__main__":
     date_str, today_index = get_current_date()
@@ -72,7 +69,7 @@ if __name__ == "__main__":
     tasks_info = get_today_tasks(today_index)
     
     full_message = (
-        "☀️ MORNING BRIEFING (Cloud Runner) ☀️\n"
+        "☀️ MORNING BRIEFING (GitHub Cloud) ☀️\n"
         f"📅 {date_str}\n"
         "--------------------------------\n"
         f"📍 พยากรณ์อากาศ ({CITY_NAME}):\n"
