@@ -9,75 +9,207 @@ WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 CITY_NAME = "Pathum Thani"
 
 WEEKLY_SCHEDULE = {
-    0: ["10:00 - 12:00 น. | คลาสเรียนวิชาเช้า", "19:00 น. | ออกกำลังกาย / ทบทวนโค้ด"],
-    1: ["09:00 - 16:00 น. | คลาสเรียนทั้งวัน", "20:00 น. | เคลียร์การบ้าน / ทำแล็บ"],
-    2: ["13:00 - 16:00 น. | แล็บปฏิบัติการ", "21:00 น. | พักผ่อน / เล่นเกม"],
-    3: ["09:00 - 12:00 น. | เรียนเลกเชอร์", "15:00 น. | นัดคุยงานโปรเจกต์"],
-    4: ["10:00 - 15:00 น. | เรียนวิชาเอก", "18:00 น. | สรุปงานประจำสัปดาห์"],
-    5: ["ช่วงบ่าย | ซักผ้า / ทำความสะอาดห้อง", "20:00 น. | ดูหนัง / พักผ่อน"],
-    6: ["ช่วงเย็น | วางแผนงานสำหรับสัปดาห์หน้า", "23:00 น. | เข้านอนไวเตรียมเริ่มสัปดาห์ใหม่"]
+    0: [
+        {"time": "09:00 - 12:00", "subject": "TCP/IP Networks", "room": "ห้อง 16307"},
+        {"time": "13:00 - 20:00", "subject": "Machine Learning", "room": "ห้อง 16306"}
+    ],
+    1: [
+        {"time": "ทั้งวัน", "subject": "ไม่มีเรียน (Free Day)", "room": "พักผ่อน / ทบทวนเนื้อหา"}
+    ],
+    2: [
+        {"time": "09:00 - 12:00", "subject": "Internet of Things", "room": "ห้อง 16203"},
+        {"time": "15:00 - 17:00", "subject": "Entrepreneurship", "room": "ห้อง บธ-2 BA 2406"},
+        {"time": "19:00 - 21:00", "subject": "Computer Network Lab", "room": "ห้อง 16204"}
+    ],
+    3: [
+        {"time": "09:00 - 12:00", "subject": "Server Programming", "room": "ห้อง 16306"},
+        {"time": "13:00 - 18:00", "subject": "Computer Software Lab", "room": "ห้อง 16306"}
+    ],
+    4: [
+        {"time": "10:00 - 12:00", "subject": "Computer Network Lab", "room": "ห้อง 16204"},
+        {"time": "13:00 - 20:00", "subject": "Software Engineering", "room": "ห้อง 16202"}
+    ],
+    5: [
+        {"time": "15:00 - 18:00", "subject": "Internet of Things", "room": "ห้อง 16203"},
+        {"time": "18:00 - 21:00", "subject": "Server Programming", "room": "ห้อง 16207"}
+    ],
+    6: [
+        {"time": "ทั้งวัน", "subject": "วันอาทิตย์ (Holiday)", "room": "พักผ่อนเตรียมลุยสัปดาห์ใหม่"}
+    ]
 }
 
 def get_current_date():
-    # เวลาเซิร์ฟเวอร์ GitHub เป็น UTC จึงบวก 7 ชั่วโมงให้เป็นเวลาไทย
     now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
     days_th = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"]
-    months_th = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
-                 "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
+    months_th = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", 
+                 "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
     day_name = days_th[now.weekday()]
     return f"วัน{day_name}ที่ {now.day} {months_th[now.month]} {now.year + 543}", now.weekday()
 
-def get_today_tasks(day_index):
-    tasks = WEEKLY_SCHEDULE.get(day_index, ["ไม่มีนัดหมายพิเศษ"])
-    return "\n".join([f"  • {task}" for task in tasks])
-
-def get_weather():
+def get_weather_data():
     url = f"https://api.openweathermap.org/data/2.5/weather?q={CITY_NAME}&appid={WEATHER_API_KEY}&units=metric&lang=th"
     try:
         res = requests.get(url)
         if res.status_code == 200:
             data = res.json()
-            temp = data["main"]["temp"]
-            feels_like = data["main"]["feels_like"]
-            desc = data["weather"][0]["description"]
-            humidity = data["main"]["humidity"]
-            return (
-                f"  • อุณหภูมิ: {temp}°C (รู้สึกเหมือน {feels_like}°C)\n"
-                f"  • สภาพอากาศ: {desc}\n"
-                f"  • ความชื้น: {humidity}%"
-            )
-        return f"  • ⚠️ ไม่สามารถดึงสภาพอากาศได้ (Code: {res.status_code})"
-    except Exception as e:
-        return f"  • ⚠️ เกิดข้อผิดพลาด: {e}"
+            return {
+                "temp": f"{round(data['main']['temp'], 1)}°C",
+                "feels_like": f"{round(data['main']['feels_like'], 1)}°C",
+                "desc": data["weather"][0]["description"],
+                "humidity": f"{data['main']['humidity']}%"
+            }
+        return {"temp": "-", "feels_like": "-", "desc": "ไม่พบข้อมูล", "humidity": "-"}
+    except:
+        return {"temp": "-", "feels_like": "-", "desc": "ขัดข้อง", "humidity": "-"}
 
-def send_line_briefing(message_text):
+def build_flex_message(date_str, today_index, weather):
+    tasks = WEEKLY_SCHEDULE.get(today_index, [])
+    
+    # สร้างบล็อกตารางเรียนแต่ละวิชา
+    schedule_components = []
+    for item in tasks:
+        schedule_components.append({
+            "type": "box",
+            "layout": "vertical",
+            "margin": "md",
+            "spacing": "xs",
+            "contents": [
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                        {"type": "text", "text": "⏰ " + item["time"], "size": "xs", "color": "#06c755", "weight": "bold", "flex": 0},
+                        {"type": "text", "text": " | " + item["room"], "size": "xs", "color": "#888888", "flex": 1}
+                    ]
+                },
+                {
+                    "type": "text",
+                    "text": item["subject"],
+                    "size": "sm",
+                    "weight": "bold",
+                    "color": "#333333",
+                    "wrap": True
+                }
+            ]
+        })
+
+    # โครงสร้าง Flex Message แบบ Bubble
+    flex_payload = {
+        "type": "flex",
+        "altText": "☀️ รายงานสรุป Morning Briefing ประจำวัน",
+        "contents": {
+            "type": "bubble",
+            "size": "mega",
+            "header": {
+                "type": "box",
+                "layout": "vertical",
+                "backgroundColor": "#06c755",
+                "paddingTop": "20px",
+                "paddingBottom": "20px",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "MORNING BRIEFING",
+                        "color": "#ffffff",
+                        "weight": "bold",
+                        "size": "xs",
+                        "letterSpacing": "2px"
+                    },
+                    {
+                        "type": "text",
+                        "text": date_str,
+                        "color": "#ffffff",
+                        "weight": "bold",
+                        "size": "lg",
+                        "margin": "sm"
+                    }
+                ]
+            },
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "paddingAll": "20px",
+                "contents": [
+                    # ส่วนสภาพอากาศ
+                    {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "backgroundColor": "#f8f9fa",
+                        "cornerRadius": "12px",
+                        "paddingAll": "14px",
+                        "contents": [
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "flex": 3,
+                                "contents": [
+                                    {"type": "text", "text": f"📍 ปทุมธานี • {weather['desc']}", "size": "xs", "color": "#666666"},
+                                    {"type": "text", "text": weather["temp"], "size": "xxl", "weight": "bold", "color": "#111111", "margin": "xs"}
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "vertical",
+                                "flex": 2,
+                                "justifyContent": "center",
+                                "alignItems": "flex-end",
+                                "contents": [
+                                    {"type": "text", "text": f"รู้สึกเหมือน {weather['feels_like']}", "size": "xxs", "color": "#888888"},
+                                    {"type": "text", "text": f"💧 ชื้น {weather['humidity']}", "size": "xxs", "color": "#888888", "margin": "xs"}
+                                ]
+                            }
+                        ]
+                    },
+                    {"type": "separator", "margin": "xl", "color": "#f0f0f0"},
+                    # ส่วนหัวตารางเรียน
+                    {
+                        "type": "text",
+                        "text": "📚 ตารางเรียนและกิจกรรมวันนี้",
+                        "size": "sm",
+                        "weight": "bold",
+                        "color": "#111111",
+                        "margin": "lg"
+                    },
+                    {
+                        "type": "box",
+                        "layout": "vertical",
+                        "margin": "sm",
+                        "contents": schedule_components
+                    }
+                ]
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "text": "✨ ขอให้วันนี้เป็นวันที่ดีและลุยงานได้อย่างราบรื่น!",
+                        "size": "xs",
+                        "color": "#aaaaaa",
+                        "align": "center"
+                    }
+                ]
+            }
+        }
+    }
+    return flex_payload
+
+def send_line_flex(payload):
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {LINE_ACCESS_TOKEN}"
     }
-    payload = {
+    body = {
         "to": USER_ID,
-        "messages": [{"type": "text", "text": message_text}]
+        "messages": [payload]
     }
-    res = requests.post(url, headers=headers, json=payload)
-    print(f"ผลการส่ง LINE: {res.status_code}, {res.text}")
+    res = requests.post(url, headers=headers, json=body)
+    print(f"ผลการส่ง Flex Message: {res.status_code}, {res.text}")
 
 if __name__ == "__main__":
     date_str, today_index = get_current_date()
-    weather_info = get_weather()
-    tasks_info = get_today_tasks(today_index)
-    
-    full_message = (
-        "☀️ MORNING BRIEFING (GitHub Cloud) ☀️\n"
-        f"📅 {date_str}\n"
-        "--------------------------------\n"
-        f"📍 พยากรณ์อากาศ ({CITY_NAME}):\n"
-        f"{weather_info}\n"
-        "--------------------------------\n"
-        "📝 กำหนดการ / สิ่งที่ต้องทำวันนี้:\n"
-        f"{tasks_info}\n"
-        "--------------------------------\n"
-        "✨ ขอให้วันนี้เป็นวันที่ราบรื่นและสดใสนะครับ!"
-    )
-    send_line_briefing(full_message)
+    weather = get_weather_data()
+    flex_card = build_flex_message(date_str, today_index, weather)
+    send_line_flex(flex_card)
