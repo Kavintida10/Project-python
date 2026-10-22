@@ -206,4 +206,5 @@ def send_line_flex(payload):
 if __name__ == "__main__":
     date_str, today_index = get_current_date()
     weather = get_weather_data()
-    flex_card = build_flex_message(date_
+    flex_card = build_flex_message(date_str, today_index, weather)
+    send_line_flex(flex_card)
